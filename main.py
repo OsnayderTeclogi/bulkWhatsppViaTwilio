@@ -1,24 +1,45 @@
-# Download the helper library from https://www.twilio.com/docs/python/install
-from dotenv import load_dotenv
 import os
-from twilio.rest import Client
 import csv
 import re
 import json
+from dotenv import load_dotenv
+from twilio.rest import Client
+import config
+from config import TwilioAccount, MessageService, MsgTemplate
+
 
 load_dotenv()
 
-account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-content_sid = os.environ.get('CONTENT_SID')
-message_service_id = os.environ.get('MESSAGE_SERVICE_ID')
+ALL_CREDS = {
+    "TECLOGI":{
+        "account": os.environ.get('TECLOGI_ACCOUNT_SID'),
+        "token": os.environ.get('TECLOGI_AUTH_TOKEN')
+    },
+    "LOGGIAPP":{
+        "account": os.environ.get('LOGGIAPP_INNNOVBO_ACCOUNT_SID'),
+        "token": os.environ.get('LOGGIAPP_INNNOVBO_TOKEN')
+    }
+}
 
-client = Client(account_sid, auth_token)
+# ____________________________________________________________________
+# __________________________ PARÁMETROS ______________________________
+
+CONTENT_SID = MsgTemplate.PUBLICACION_VIAJES
+MESSAGE_SERVICE_ID = MessageService.TECLOGI
+TWILIO_ACCOUNT = TwilioAccount.TECLOGI
+CSV_FILE_PATH = "./data/camiones_y_camionetas.csv" # Esta es la ubicación del listado de telefonos
+COMPANY = "TRANSPORTES LA ESTRELLA" # Estes es el nombre de la empresa de transporte
+
+# ☝️________________________ PARÁMETROS _____________________________☝️
+# _____________________________________________________________________
+
+ACCOUNT_CREDS = ALL_CREDS[TWILIO_ACCOUNT.value]
+client = Client(ACCOUNT_CREDS["account"], ACCOUNT_CREDS["token"])
 
 
 def main():
-
-    with open('results.csv', 'w', newline='') as file_csv:
+    """Main"""
+    with open('results.csv', 'w', newline='', encoding="utf8") as file_csv:
         colums = ["name",
                   "phone",
                   "error_code",
@@ -43,6 +64,7 @@ def main():
                 "status": response["status"],
                 "date_sent": response["date_sent"]
             })
+            print(f'Sent to {contact["phone"]}')
     print('Proceso completado')
 
 
@@ -53,9 +75,8 @@ def get_contacts() -> list:
         list: Una lista de {"name":"nombre", "phone":"573000002233}
     """
     contacts = []
-    csv_file_path = "./data/contacts.csv"
 
-    with open(csv_file_path, 'r') as csvfile:
+    with open(CSV_FILE_PATH, 'r', encoding="utf8") as csvfile:
         csv_reader = csv.reader(csvfile)
         next(csv_reader)
         for row in csv_reader:
@@ -67,8 +88,8 @@ def get_contacts() -> list:
     return contacts
 
 
-def send_message(phone: str, name: str):
-
+def send_message(phone: str, user_name: str):
+    """Send message"""
     response = {
         "error_code": "",
         "error_message": "",
@@ -80,11 +101,21 @@ def send_message(phone: str, name: str):
     try:
         message = client.messages \
             .create(
-                    content_sid=content_sid,
-                    from_=message_service_id,
+                    content_sid=CONTENT_SID.value,
+                    from_=MESSAGE_SERVICE_ID.value,
                     to=f'whatsapp:+{phone}',
                     content_variables=json.dumps({
-                        'name': name
+                        "name": user_name,
+                        "company": COMPANY,
+                        "tipo_vehiculo": "Patineta",
+                        "tipo_carroceria": "Plancha",
+                        "peso": "0",
+                        "cubicaje": "0",
+                        "origen": "Buenaventura",
+                        "destino": "Palmira",
+                        "fecha_viaje": "21/08/2024",
+                        "obs": "Puede aplicar pronto pago. Contrato por 1 año.",
+                        "telefono_contacto": "3157004161"
                     }),
                     )
 
@@ -95,9 +126,12 @@ def send_message(phone: str, name: str):
             "status": message.status,
             "date_sent": message.date_sent,
         }
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
 
-        patron = re.compile(r'Twilio returned the following information:(.*?)More information may be available here:', re.DOTALL) # noqa: 501
+        patron = re.compile(
+            r'Twilio returned the following information:(.*?)More information may be available here:', # pylint: disable=line-too-long
+            re.DOTALL
+        )
 
         coincidencias = patron.search(str(e))
 
@@ -114,3 +148,4 @@ def send_message(phone: str, name: str):
 
 if __name__ == "__main__":
     main()
+    print('Proceso terminado')
