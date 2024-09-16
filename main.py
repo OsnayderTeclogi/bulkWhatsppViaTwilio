@@ -4,8 +4,7 @@ import re
 import json
 from dotenv import load_dotenv
 from twilio.rest import Client
-import config
-from config import TwilioAccount, MessageService, MsgTemplate
+from config import TwilioAccount, MessageService, MsgTemplate, TwilioVariables
 
 
 load_dotenv()
@@ -27,8 +26,9 @@ ALL_CREDS = {
 CONTENT_SID = MsgTemplate.PUBLICACION_VIAJES
 MESSAGE_SERVICE_ID = MessageService.TECLOGI
 TWILIO_ACCOUNT = TwilioAccount.TECLOGI
-CSV_FILE_PATH = "./data/camiones_y_camionetas.csv" # Esta es la ubicación del listado de telefonos
-COMPANY = "TRANSPORTES LA ESTRELLA" # Estes es el nombre de la empresa de transporte
+CSV_FILE_PATH = "./data/os.csv" # Esta es la ubicación del listado de telefonos
+COMPANY = "TECLOGI" # Estes es el nombre de la empresa de transporte
+VARIABLES = TwilioVariables.PELDAR
 
 # ☝️________________________ PARÁMETROS _____________________________☝️
 # _____________________________________________________________________
@@ -41,12 +41,12 @@ def main():
     """Main"""
     with open('results.csv', 'w', newline='', encoding="utf8") as file_csv:
         colums = ["name",
-                  "phone",
-                  "error_code",
-                  "error_message",
-                  "sid",
-                  "status",
-                  "date_sent"]
+                    "phone",
+                    "error_code",
+                    "error_message",
+                    "sid",
+                    "status",
+                    "date_sent"]
         writer_csv = csv.DictWriter(file_csv, fieldnames=colums)
 
         writer_csv.writeheader()
@@ -88,7 +88,7 @@ def get_contacts() -> list:
     return contacts
 
 
-def send_message(phone: str, user_name: str):
+def send_message(phone: str, user_name: str = ""):
     """Send message"""
     response = {
         "error_code": "",
@@ -104,19 +104,7 @@ def send_message(phone: str, user_name: str):
                     content_sid=CONTENT_SID.value,
                     from_=MESSAGE_SERVICE_ID.value,
                     to=f'whatsapp:+{phone}',
-                    content_variables=json.dumps({
-                        "name": user_name,
-                        "company": COMPANY,
-                        "tipo_vehiculo": "Patineta",
-                        "tipo_carroceria": "Plancha",
-                        "peso": "0",
-                        "cubicaje": "0",
-                        "origen": "Buenaventura",
-                        "destino": "Palmira",
-                        "fecha_viaje": "21/08/2024",
-                        "obs": "Puede aplicar pronto pago. Contrato por 1 año.",
-                        "telefono_contacto": "3157004161"
-                    }),
+                    content_variables=json.dumps(VARIABLES.value),
                     )
 
         response = {
