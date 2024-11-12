@@ -3,7 +3,7 @@ import csv
 import re
 import json
 from dotenv import load_dotenv
-from twilio.rest import Client  # type: ignore
+from twilio.rest import Client # type: ignore
 from config import TwilioAccount, MessageService, MsgTemplate, TwilioVariables, DestinationPhones
 
 
@@ -23,11 +23,11 @@ ALL_CREDS = {
 # ____________________________________________________________________
 # __________________________ PARÁMETROS ______________________________
 
-CONTENT_SID = MsgTemplate.POST_BUN
-MESSAGE_SERVICE_ID = MessageService.TECLOGI
-TWILIO_ACCOUNT = TwilioAccount.TECLOGI
-CSV_FILE_PATH = DestinationPhones.TRACTOCAMIONES_BUN  # Esta es la ubicación del listado de telefonos
-COMPANY = "Transalud"  # Estes es el nombre de la empresa de transporte
+CONTENT_SID = MsgTemplate.OPTIN_LOGGIAPP_V2
+MESSAGE_SERVICE_ID = MessageService.LOGGIAPP_INNOVBO_PROD
+TWILIO_ACCOUNT = TwilioAccount.LOGGIAPP
+CSV_FILE_PATH = DestinationPhones.EXTREMA
+COMPANY = "Seguridad Extrema"  # Estes es el nombre de la empresa de transporte
 VARIABLES = TwilioVariables.ULTIMA
 
 # ☝️________________________ PARÁMETROS _____________________________☝️
@@ -104,7 +104,10 @@ def send_message(phone: str, name:str):
                     content_sid=CONTENT_SID.value,
                     from_=MESSAGE_SERVICE_ID.value,
                     to=f'whatsapp:+{phone}',
-                    content_variables=json.dumps(VARIABLES.value),
+                    content_variables=json.dumps({
+                        "name": name,
+                        "company": COMPANY
+                    }),
             )
 
         response = {
@@ -114,7 +117,7 @@ def send_message(phone: str, name:str):
             "status": message.status,
             "date_sent": message.date_sent,
         }
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e: # pylint: disable=broad-exception-caught
 
         patron = re.compile(
             r'Twilio returned the following information:(.*?)More information may be available here:', # pylint: disable=line-too-long
