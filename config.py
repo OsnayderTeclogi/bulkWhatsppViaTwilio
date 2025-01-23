@@ -28,21 +28,30 @@ class MsgTemplate(Enum):
     OPTIN_LOGGIAPP_V2 = 'HXa3c102f65900773c2e049198de2323cf'
     PUBLICACION_VIAJES = 'HXed664881a0219139426abf6a4c910702'
     SEGURIDAD = 'HX47f13506972a396b155f624a4cd029db'
-    ENTURNAMIENTO_BUN = 'HX642fc90c265fdb0a22f111a74df8227b'
-    POST_BUN = 'HX865324470d3f40928dd54eaa2eb7bd63'
+    ENTURNAMIENTO_BONO = 'HXfd556e7d73126c20a4d92a0720166591'
+    ENTURNAMIENTO_BONO_CAMIONES = 'HX6f84e525a215aec20f12d6ca94e576d2'
+    ENT_BONO_TRACTO_BOG_COSTA = 'HXc687a987911f5aa8a578650365c97301'
+    ENT_BONO_NACIONAL_29_11 = 'HX68041d3035f9fd937c5021c47b902f20'
+    TEMP = 'HX1fe20f2ea260991ff2c4e41eeb6e24c1'
+
 
 
 class DestinationPhones(Enum):
     """DestinationPhones"""
     OS = "./data/os.csv"
+    GINA = "./data/gina.csv"
     CAMIONES_Y_CAMIONETAS = "./data/camiones_y_camionetas.csv"
     GENERAL = "./data/general.csv"
     TRACTOCAMIONES = "./data/tractocamiones.csv"
     TRANSALUD = "./data/transalud.csv"
     TEMP = "./data/temp.csv"
+    PRONTO_PAGO = "./data/pronto_pago.csv"
     CARRILLO = "./data/carrillo.csv"
     EXTREMA = "./data/extrema.csv"
     TRACTOCAMIONES_BUN = "./data/tractocamiones_bun.csv"
+    PATINETAS = "./data/patinetas.csv"
+    MULAS = "./data/mulas.csv"
+    OPPERAR = "./data/opperar.csv"
 
 
 class TwilioVariables(Enum):
@@ -71,4 +80,8 @@ class TwilioVariables(Enum):
         "fecha_viaje": "Hoy miércoles 16",
         "obs": "_",
         "telefono_contacto": "3112035526  - 3176581079"
+    }
+
+    OBS: Dict[str, str] = {
+        "1": " ",
     }

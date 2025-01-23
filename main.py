@@ -5,6 +5,8 @@ import json
 from dotenv import load_dotenv
 from twilio.rest import Client  # type: ignore
 from config import TwilioAccount, MessageService, MsgTemplate, TwilioVariables, DestinationPhones
+import datetime
+import play_notification
 
 
 load_dotenv()
@@ -23,12 +25,13 @@ ALL_CREDS = {
 # ____________________________________________________________________
 # __________________________ PARÁMETROS ______________________________
 
-CONTENT_SID = MsgTemplate.POST_BUN
+CONTENT_SID = MsgTemplate.PRONTO_PAGO
 MESSAGE_SERVICE_ID = MessageService.TECLOGI
 TWILIO_ACCOUNT = TwilioAccount.TECLOGI
-CSV_FILE_PATH = DestinationPhones.TRACTOCAMIONES_BUN  # Esta es la ubicación del listado de telefonos
+CSV_FILE_PATH = DestinationPhones.PRONTO_PAGO # Esta es la ubicación del listado de telefonos
 COMPANY = "Transalud"  # Estes es el nombre de la empresa de transporte
-VARIABLES = TwilioVariables.ULTIMA
+VARIABLES = TwilioVariables.OBS
+
 
 # ☝️________________________ PARÁMETROS _____________________________☝️
 # _____________________________________________________________________
@@ -38,6 +41,7 @@ client = Client(ACCOUNT_CREDS["account"], ACCOUNT_CREDS["token"])
 
 
 def main():
+    start_time = datetime.datetime.now()
     """Main"""
     with open('results.csv', 'w', newline='', encoding="utf8") as file_csv:
         colums = ["name",
@@ -66,6 +70,16 @@ def main():
             })
             print(f'Sent to {contact["phone"]}')
     print('Proceso completado')
+
+    # Your existing code here
+
+    end_time = datetime.datetime.now()
+    total_time = end_time - start_time
+    total_minutes = total_time.total_seconds() / 60
+
+    print(f'Hora de inicio: {start_time}')
+    print(f'Hora de fin: {end_time}')
+    print(f'Total minutos del proceso: {total_minutes}')
 
 
 def get_contacts() -> list:
@@ -137,3 +151,5 @@ def send_message(phone: str, name:str):
 if __name__ == "__main__":
     main()
     print('Proceso terminado')
+    play_notification.play_sound("send_messagges.wav", debug=False)
+

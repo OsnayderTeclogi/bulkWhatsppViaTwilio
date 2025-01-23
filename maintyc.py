@@ -26,8 +26,8 @@ ALL_CREDS = {
 CONTENT_SID = MsgTemplate.OPTIN_LOGGIAPP_V2
 MESSAGE_SERVICE_ID = MessageService.LOGGIAPP_INNOVBO_PROD
 TWILIO_ACCOUNT = TwilioAccount.LOGGIAPP
-CSV_FILE_PATH = DestinationPhones.EXTREMA
-COMPANY = "Seguridad Extrema"  # Estes es el nombre de la empresa de transporte
+CSV_FILE_PATH = DestinationPhones.TEMP
+COMPANY = "GOLTI"  # Estes es el nombre de la empresa de transporte
 VARIABLES = TwilioVariables.ULTIMA
 
 # ☝️________________________ PARÁMETROS _____________________________☝️
